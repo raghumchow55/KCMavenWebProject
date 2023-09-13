@@ -1,53 +1,32 @@
 pipeline{
-	agent any
-	// tools{
-	// 	maven "test-maven"
-	// }
-      stages{
-           stage('Checkout'){
-	    
-               steps{
-		 echo 'cloning..'
-                 git 'https://github.com/raghumchow55/DevOpsClassCodes'
-              }
-          }
-          stage('Compile'){
-             
-              steps{
-                  echo 'compiling..'
-                  sh 'mvn compile'
-	      }
-          }
-          stage('CodeReview'){
-		  
-              steps{
-		    
-		  echo 'codeReview'
-                  sh 'mvn pmd:pmd'
-		  recordIssues(tools: [pmdParser()])
-              }
-          }
-           stage('UnitTest'){
-		  
-              steps{
-	         
-                  sh 'mvn test'
-              }
-               post {
-               success {
-                   junit 'target/surefire-reports/*.xml'
-               }
-           }	
-          }
-          
-          stage('Package'){
-		  
-              steps{
-		  
-                  sh 'mvn package'
-              }
-          }
-	     
-          
-      }
+    agent any
+    stages{
+        stage("Fetch code from github"){
+            steps{
+                git url: 'https://github.com/raghumchow55/KCMavenWebProject'
+                echo 'first job done'
+            }
+        }
+        stage("Code compile"){
+            steps{
+                sh 'mvn compile'
+            }
+        }
+        stage("Code testing"){
+            steps{
+                sh 'mvn test'
+            }
+        }
+        stage("Code qa"){
+            steps{
+                sh 'mvn pmd:pmd'
+                recordIssues(tools: [pmdParser()])
+            }
+        }
+        stage("Code package"){
+            steps{
+                sh 'mvn package'
+            }
+        }
+    }
 }
